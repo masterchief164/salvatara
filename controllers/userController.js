@@ -1,14 +1,13 @@
 
-const User = require("../models/userModel");
-const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
-const APIFeatures = require("../utils/apiFeatures");
-const referralCodeGenerator = require('referral-code-generator')
-const {searchQuery} = require("../utils/helper");
+const User = require("../models/userModel")
+const catchAsync = require('../utils/catchAsync')
+const AppError = require('../utils/appError')
+const APIFeatures = require("../utils/apiFeatures")
+const {searchQuery} = require("../utils/helper")
+const md5 = require('md5')
+const SendMail = require("../utils/mail")
 
-const Booking = require("../models/bookingModel");
-
-
+//user onboarding
 exports.userOnboarding = catchAsync(async(req,res,next) =>{
     const user = req.user;
 
@@ -19,46 +18,43 @@ exports.userOnboarding = catchAsync(async(req,res,next) =>{
     })
 });
 
-
+// user login
 exports.login = catchAsync(async(req,res,next) =>{
-    const user = req.user;
-    res.status(200).json({
-        status:true,
-        message:"User details",
-        user:user,
-    })
+    const user = req.user
+    console.log(req.user.password, md5(req.body.password))
+    if (req.user.password === md5(req.body.password) && req.body.email === req.body.email) {
+        res.status(200).json({
+            status:true,
+            message:"Success fully Logged In",
+            user:user,
+        })
+      } else {
+        res.send({status:false, message:"passord or email wrong"})
+      }
 })
 
 
 //update user
-exports.updateUser = catchAsync(async(req,res,next) =>{
-    const user = req.user;
-    const userId = req.params.userId;
-
-    if(user.userType==="admin" || JSON.stringify(user._id)===JSON.stringify(userId)){
-        let updatedUser = await User.findByIdAndUpdate(userId,req.body,{new:true});
+exports.updateUserPassword = catchAsync(async(req,res,next) =>{
+    const user = req.user
+    const userId = req.params.userId
+    let data = {
+        password:md5(req.body.password)
+    }
+        let updatedUser = await User.findOneAndUpdate({_id:userId},data,{new:true})
         return res.status(200).json({
             status:true,
             message:"User updated",
             user:updatedUser
         })
-    }else{
-        return next(new AppError("You don't have permission to edit user",400))
-    }
 })
 
-
-//get a user
-exports.getAUser = catchAsync(async(req,res,next) =>{
-    const userId = req.params.userId;
-
-    let user = await User.findById(userId);
-    return res.status(200).json({
-        status:true,
-        message:"get user details",
-        user:user
-    })
-
+// send otp to mail
+exports.sendOtp = catchAsync(async(req,res,next) =>{
+    const user = req.user
+    const otp = Math.floor(10000 + Math.random() * 90000)
+    SendMail.sendMail(req.user.email,'Regarding reset password in Salvatara app', 'OTP for Reset Password ' + otp) 
+    res.send({status:true, message:'otp successfully sent to mail'})
 })
 
 

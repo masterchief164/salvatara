@@ -1,54 +1,58 @@
-const admin = require("firebase-admin");
-const serviceAccount = require("../firebase-service-secret.json");
-const AppError = require('../utils/appError');
-const User = require("../models/userModel");
-const Notification = require("../models/notificationModel");
-const { getAuth, signInWithCustomToken } = require("firebase/auth");
-require("../c2c-firebase")
+const admin = require("firebase-admin")
+const serviceAccount = require("../salvatara-private-key.json")
+const AppError = require('../utils/appError')
+const User = require("../models/userModel")
+const md5 = require("md5")
+// const Notification = require("../models/notificationModel")
+const { getAuth, signInWithCustomToken } = require("firebase/auth")
+require("../utils/firebaseweb")
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
 const requiresAuth = async (req,res,next) =>{
-    const idToken = req.header("token");
+    const idToken = req.header("Authorization")
     if(!idToken){
         return next(new AppError('Please pass firebase auth token ',400));
     }
+    const bearer = idToken.split(' ')
+    const token = bearer[1]
+
     let decodedIdToken;
     try{
-        decodedIdToken = await admin.auth().verifyIdToken(idToken,true)
+        decodedIdToken = await admin.auth().verifyIdToken(token,true)
     }catch(error){
-        next(error);
+        next(error)
         return
     }
     let user = await User.findOne({firebaseUid:decodedIdToken.uid});
-    if(!user){[]
+    if(!user){
         if(req.baseUrl + req.path==="/user/onboarding"){
             if(decodedIdToken.firebase.sign_in_provider === "phone"){
                 user = await User.create({
                     phone:decodedIdToken.phone_number,
                     firebaseUid:decodedIdToken.uid,
                     firebaseSignInProvider:decodedIdToken.firebase.sign_in_provider,
-                    name:req.body.name,
                     email:req.body.email,
-                    userType:req.body.userType
+                    userType:req.body.userType,
+                    password:md5(req.body.password),
                 })
             }else{
                 user = await User.create({
-                    name:decodedIdToken.name,
                     email:decodedIdToken.email,
                     firebaseUid:decodedIdToken.uid,
                     firebaseSignInProvider:decodedIdToken.firebase.sign_in_provider,
-                    userType:req.body.userType
-    
+                    userType:req.body.userType,
+                    password:md5(req.body.password),
+                    loginType:req.body.loginType
                 })
             }
         }else{
             return next(new AppError("User not found",404));
         }
         
-    }
+    } 
     req.user = user;
     next();
 }
@@ -64,7 +68,6 @@ const restrictTo = (...roles) =>{
 
 //Only for backend developer to generate token to call APIS
 const generateToken = async(req,res,next) => {
-
     try{
         const token =  await admin.auth().createCustomToken(req.params.uid);
         const user = await signInWithCustomToken(getAuth(),token);

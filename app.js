@@ -28,13 +28,12 @@ app.get("/",(req,res) =>{
 
 
 //routers
-// const userRouter = require("./routes/userRoute")
-const galleryRouter = require('./routes/galleryRoutes')
-
+const userRouter = require("./routes/userRoute")
+const adminRouter = require("./routes/adminRoute")
 
 // router middlewares
-// app.use("/user",userRouter)
-app.use('/gallery',galleryRouter)
+app.use("/user",userRouter)
+app.use("/admin",adminRouter)
 
 // to handled unregister endpoint
 app.all('*',(req,res,next) =>{

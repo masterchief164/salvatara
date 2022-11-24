@@ -6,7 +6,7 @@ const router = require("express").Router()
 router.post("/adminLogin",requiresAuth,userController.login)
 router.post("/createCollection", requiresAuth, adminController.createCollection)
 router.post("/createNFT", requiresAuth, adminController.createNFT)
-router.get("/getAllNFT", requiresAuth, adminController.getAllNFT)
+router.get("/getAllNFT", adminController.getAllNFT)
 
 
 module.exports = router

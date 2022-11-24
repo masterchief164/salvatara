@@ -9,14 +9,13 @@ const SendMail = require("../utils/mail")
 
 //user onboarding
 exports.userOnboarding = catchAsync(async(req,res,next) =>{
-    const user = req.user;
-
+    const user = req.user
     res.status(200).json({
         status:true,
         message:"User onboarded.",
         user:user
     })
-});
+})
 
 // user login
 exports.login = catchAsync(async(req,res,next) =>{

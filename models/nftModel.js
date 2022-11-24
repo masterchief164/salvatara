@@ -33,11 +33,21 @@ const nftSchema = new mongoose.Schema({
         type:String,
         enum:["setPrice","highestBid"]
     },
+    status:{
+        type:String,
+        enum:["OnSale","Sold","Hidden","InActive","OfferReceived"]
+    },
     collectionId:{
         type: mongoose.Schema.Types.ObjectId
     }
 },
     {timestamps:true}
 )
-
+nftSchema.set('toJSON', {
+    virtuals: true,
+    transform: (doc, ret, options) => {
+        delete ret.__v
+        delete ret.id
+    }
+})
 module.exports = mongoose.model("nft",nftSchema,"nft")

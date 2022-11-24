@@ -30,4 +30,12 @@ const collectionSchema = new mongoose.Schema({
     {timestamps:true}
 )
 
+collectionSchema.set('toJSON', {
+    virtuals: true,
+    transform: (doc, ret, options) => {
+        delete ret.__v
+        delete ret.id
+    }
+})
+
 module.exports = mongoose.model("collection",collectionSchema,"collection")

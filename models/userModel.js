@@ -39,5 +39,11 @@ const userSchema = new mongoose.Schema({
 },
     {timestamps:true}
 )
-
+userSchema.set('toJSON', {
+    virtuals: true,
+    transform: (doc, ret, options) => {
+        delete ret.__v
+        delete ret.id
+    }
+  })
 module.exports = mongoose.model("User",userSchema,"User");

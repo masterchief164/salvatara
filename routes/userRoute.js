@@ -7,6 +7,8 @@ router.post("/login",requiresAuth,userController.login)
 router.post("/generate-token/:uid",generateToken)
 router.patch("/updateUserPassword/:userId",requiresAuth,userController.updateUserPassword)
 router.post("/sendOtp",requiresAuth,userController.sendOtp)
+router.get("/addViews",userController.addViews)
+router.get("/cryptoprice", userController.cryptoprice)
 
 
 module.exports = router

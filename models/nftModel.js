@@ -38,7 +38,12 @@ const nftSchema = new mongoose.Schema({
         enum:["OnSale","Sold","Hidden","InActive","OfferReceived"]
     },
     collectionId:{
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'collection'
+    },
+    views:{
+        type:Number,
+        default:0
     }
 },
     {timestamps:true}

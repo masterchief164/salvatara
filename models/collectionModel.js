@@ -25,6 +25,9 @@ const collectionSchema = new mongoose.Schema({
     },
     cover:{
         type:String
+    },
+    user:{
+        type:mongoose.Schema.Types.ObjectId
     }
 },
     {timestamps:true}

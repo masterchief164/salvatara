@@ -1,11 +1,13 @@
 
 const User = require("../models/userModel")
+const NFT = require("../models/nftModel")
 const catchAsync = require('../utils/catchAsync')
 const AppError = require('../utils/appError')
 const APIFeatures = require("../utils/apiFeatures")
 const {searchQuery} = require("../utils/helper")
 const md5 = require('md5')
 const SendMail = require("../utils/mail")
+let price = require('crypto-price')
 
 //user onboarding
 exports.userOnboarding = catchAsync(async(req,res,next) =>{
@@ -82,3 +84,17 @@ exports.getAllUsers = catchAsync(async(req,res,next) =>{
         users:doc
     })
 })
+
+// addViews count 
+exports.addViews = catchAsync(async(req,res,next) =>{
+    let found = await NFT.findOne({_id:req.query.nftId})
+    if(found) {
+        let count = found.views + 1
+        await NFT.findOneAndUpdate({_id:req.query.nftId},{views:count})
+        res.send({status:true, message:"count updated"})
+    }
+})
+
+exports.cryptoprice = async(req,res)=>{
+
+}

@@ -1,7 +1,13 @@
 
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema({
+    username:{
+        type:String
+    },
+    name:{
+        type:String
+    },
     email:{
         type:String,
     },
@@ -14,6 +20,9 @@ const userSchema = new mongoose.Schema({
         default:"user"
     },
     walletId:{
+        type:String
+    },
+    bio:{
         type:String
     },
     firebaseUid:{
@@ -34,6 +43,24 @@ const userSchema = new mongoose.Schema({
         default:false
     },
     loginType:{
+        type:String
+    },
+    domain:{
+        type:String
+    },
+    instagram:{
+        type:String
+    },
+    facebook:{
+        type:String
+    },
+    twitter:{
+        type:String
+    },
+    profilePicture:{
+        type:String
+    },
+    profileCanvas:{
         type:String
     }
 },

@@ -13,5 +13,6 @@ router.get("/topSellingNFT",  adminController.topSellingNFT)
 router.get("/mostviewedNFT",  adminController.mostviewedNFT)
 router.get("/recentBids", adminController.recentBids)
 router.get("/salesData", adminController.salesData)
+router.get("/getNFT/:id", adminController.getNFT)
 
 module.exports = router

@@ -25,7 +25,8 @@ const orderSchema = new mongoose.Schema({
         default:"",
     },
     transactionType:{
-        type:String
+        type:String,
+        enum:["Transfer", "Bid","Sale", "List", "Minted"]
     },
     hash:{
         type:String
@@ -33,9 +34,9 @@ const orderSchema = new mongoose.Schema({
     tokenId:{
         type:String
     },
-    transactionType:{
-        type:String
-    },
+    // transactionType:{
+    //     type:String
+    // },
     currentDate:{
         type: Date,
         default: Date.now()

@@ -33,7 +33,7 @@ exports.createNFT = catchAsync(async(req, res) => {
             res.send({status:false, message:"NFT not created"})
         }
     } else {
-        res.send({status:false, message:"nft name already taken"}) 
+        res.send({status:false, message:"nft name already taken"})
     }
 })
 
@@ -60,7 +60,7 @@ exports.getAllNFT = catchAsync(async(req,res,next) =>{
             })
         }
     }
-    
+
     let doc
     if(req.query.status!=="") {
       doc = await NFT.find({status:req.query.status})
@@ -99,7 +99,7 @@ exports.getAllCollection = catchAsync(async(req,res,next) =>{
         res.send({status:false,message:"No Collection", data:[]})
        }
     }
-    
+
     let doc
     if(req.query.status!=="") {
       doc = await Collection.find({status:req.query.status})
@@ -120,7 +120,7 @@ exports.getAllCollection = catchAsync(async(req,res,next) =>{
 })
 
 // dashboard details
-exports.dashboard = catchAsync(async (req,res,nesxt) => {
+exports.dashboard = catchAsync(async (req,res,next) => {
     let nfts = await NFT.find()
 
     let viewsCount = 0
@@ -135,7 +135,7 @@ exports.dashboard = catchAsync(async (req,res,nesxt) => {
         viewsCount+=el.views
     })
 
-    // bidcount 
+    // bidcount
     let bidCount = await Bid.find().count()
 
     // royalty
@@ -232,7 +232,7 @@ exports.salesData=async(req,res)=>{
    //weekly
    let weeklyarr=[]
     weeklyarr =  await Order.find({$and:[{createdAt:{$gt:firstday}},{createdAt:{$lte:lastday}}]}).populate({path:"nft"})
-  
+
       let bray = []
    weeklyarr.forEach(el=>{
     if(el.nftId!=null) {
@@ -251,7 +251,7 @@ exports.salesData=async(req,res)=>{
    //monthly
    let arr = []
     arr = await Order.find({}).populate({path:"nft"})
-  
+
     let ar = []
     arr.forEach(el => {
         if(el.nftId!=null){
@@ -280,3 +280,30 @@ exports.salesData=async(req,res)=>{
     })
     res.send({status:true, message:'Sales Data Information', data: {daily:daily, weekly:weekly, monthly:montharray}})
 }
+
+exports.getNFT = catchAsync(async (req,res,next) => {
+    let nft = await NFT.findOne({_id:req.params.id}).populate({path:'collectionId',populate:{path:'user'}});
+    if(nft){
+        let orders = await Order.find({nft: req.params.id}).sort({currentDate:-1}).populate([{path:'buyer'}, {path:'seller'}]);
+        let doc = {
+            currentPrice: nft.price,
+            category: nft.category,
+            explicitContent: nft.explicit_sensitive?"Yes":"No",
+            description: nft.description,
+            stats: nft.stats,
+            nft: nft
+        };
+        if(orders.size>0) {
+            doc.seller = orders[0].seller.name;
+            doc.buyer = orders[0].buyer.name;
+        }
+        else{
+            doc.seller = nft.collectionId.user.name;
+        }
+        // TODO add properties and supply attribute
+        doc.productActivity = orders;
+        res.send({status:true, message:'NFT details', data: doc})
+    }
+    else
+        res.send({status:false, message:'NFT not found', data: null})
+});

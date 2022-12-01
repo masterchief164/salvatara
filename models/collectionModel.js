@@ -27,7 +27,8 @@ const collectionSchema = new mongoose.Schema({
         type:String
     },
     user:{
-        type:mongoose.Schema.Types.ObjectId
+        type:mongoose.Schema.Types.ObjectId,
+        ref: "User"
     }
 },
     {timestamps:true}

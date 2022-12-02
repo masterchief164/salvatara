@@ -9,6 +9,7 @@ router.patch("/updateUserPassword/:userId",requiresAuth,userController.updateUse
 router.post("/sendOtp",requiresAuth,userController.sendOtp)
 router.get("/addViews",userController.addViews)
 router.get("/cryptoprice", userController.cryptoprice)
+router.patch("/editProfile",requiresAuth,userController.editProfile)
 
 
 module.exports = router
